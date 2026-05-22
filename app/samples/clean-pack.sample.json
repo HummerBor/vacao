@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-20T12:00:00+08:00",
+  "generator": "disk-cleaner-pack-skill/1.0",
+  "machineHint": "示例机器",
+  "profile": {
+    "enabledBuiltInIds": ["C01", "C04", "C16"],
+    "disabledBuiltInIds": ["C05", "C09"],
+    "browserClearCookies": false,
+    "extraRoots": [],
+    "comment": "本机推荐：临时文件 + 浏览器 + 编辑器/智能体缓存"
+  },
+  "pack": {
+    "items": [
+      {
+        "id": "X01",
+        "label": "Claude Code 下载缓存（示例）",
+        "paths": ["C:\\Users\\<YourName>\\.claude\\downloads"],
+        "purpose": "Claude Code 安装包与构件下载缓存，删除后可重新下载。",
+        "deleteNote": "请先退出 Claude Code；不删除 skills、projects 与 settings。",
+        "tag": "可安全清理",
+        "warn": false,
+        "defaultChecked": true
+      }
+    ]
+  }
+}

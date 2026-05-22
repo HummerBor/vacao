@@ -1,0 +1,37 @@
+[package]
+name = "vacao"
+version = "0.1.0"
+description = "Vacao — Windows disk cleanup (Tauri)"
+authors = ["vacao"]
+edition = "2021"
+
+[lib]
+name = "vacao_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+walkdir = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
+trash = "5"
+dunce = "1"
+parking_lot = "0.12"
+zip = "2"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+  "Win32_Foundation",
+  "Win32_UI_Shell",
+] }
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true

@@ -1,0 +1,43 @@
+# --- Tauri app (primary) ---
+app/node_modules/
+app/dist/
+app/src-tauri/target/
+
+# --- Local / user config (next to exe or dev) ---
+config.json
+app/config.json
+**/clean-pack.json
+!app/samples/clean-pack.sample.json
+!**/clean-pack.sample.json
+app/samples/clean-pack.try.json
+**/clean-pack.try.json
+
+# --- Legacy ASP.NET prototype (build output) ---
+bin/
+obj/
+publish-temp/
+release/
+wwwroot/
+
+# --- Packages & temp ---
+*.zip
+*.7z
+publish/
+*.user
+*.suo
+
+# --- OS / IDE ---
+**/.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.local
+
+# --- Logs ---
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# --- Personal notes (optional) ---
+cursor_.md

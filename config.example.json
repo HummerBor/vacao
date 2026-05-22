@@ -1,0 +1,20 @@
+{
+  "useBuiltInDefaults": true,
+  "extraRoots": [],
+  "minSizeMB": 100,
+  "maxResults": 50000,
+  "excludeDirNames": [
+    "$Recycle.Bin",
+    "System Volume Information",
+    "node_modules",
+    ".git"
+  ],
+  "browserClearCookies": false,
+  "cleanPackPath": null,
+  "cleanPackApplyProfileOnImport": true,
+  "cursorWsMaxAgeDays": 30,
+  "cursorWsMaxSizeMb": 0,
+  "cursorWsMode": "or",
+  "cursorGlobalForce": false,
+  "cursorGlobalMinSizeMb": 500
+}

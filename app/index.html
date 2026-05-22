@@ -1,0 +1,59 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vacao</title>
+    <script>
+      document.addEventListener(
+        "contextmenu",
+        function (e) {
+          e.preventDefault();
+        },
+        { capture: true },
+      );
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+    <div class="titlebar" data-tauri-drag-region>
+      <span class="titlebar-title">Vacao</span>
+      <div class="titlebar-controls">
+        <button type="button" id="tb-min" class="titlebar-btn" aria-label="最小化">
+          <svg class="titlebar-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 6h9" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg>
+        </button>
+        <button type="button" id="tb-max" class="titlebar-btn" aria-label="最大化">
+          <svg class="titlebar-icon icon-maximize" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.25"/></svg>
+          <svg class="titlebar-icon icon-restore hidden" viewBox="0 0 12 12" aria-hidden="true"><rect x="3.5" y="1.5" width="6" height="6" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.25"/><rect x="1.5" y="3.5" width="6" height="6" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.25"/></svg>
+        </button>
+        <button type="button" id="tb-close" class="titlebar-btn titlebar-btn-close" aria-label="关闭">
+          <svg class="titlebar-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <header class="app-header">
+      <p id="elev-status" class="elev">…</p>
+    </header>
+
+    <nav class="tabs">
+      <button type="button" class="tab-btn active" data-tab="clean">一键清理</button>
+      <button type="button" class="tab-btn" data-tab="scan">大文件扫描</button>
+      <button type="button" class="tab-btn" data-tab="settings">设置</button>
+    </nav>
+
+    <main>
+      <section id="panel-clean" class="tab-panel active">
+        <div id="clean-root" class="panel-root"></div>
+      </section>
+      <section id="panel-scan" class="tab-panel">
+        <div id="scan-root" class="panel-root"></div>
+      </section>
+      <section id="panel-settings" class="tab-panel">
+        <div id="settings-root" class="panel-root"></div>
+      </section>
+    </main>
+    </div>
+  </body>
+</html>
