@@ -6,6 +6,8 @@ mod config;
 mod delete;
 mod paths;
 mod scan;
+#[cfg(windows)]
+mod win_ps;
 
 pub use scan::ScanManager;
 

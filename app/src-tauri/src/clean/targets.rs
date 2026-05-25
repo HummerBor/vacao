@@ -220,10 +220,7 @@ if ($bin -ne $null) {
 }
 Write-Output $sum
 "#;
-    let out = std::process::Command::new("powershell.exe")
-        .args(["-NoProfile", "-NonInteractive", "-Command", script])
-        .output()
-        .ok()?;
+    let out = crate::win_ps::run(script).ok()?;
     if !out.status.success() {
         return None;
     }

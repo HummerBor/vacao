@@ -220,10 +220,7 @@ pub fn list_drives() -> Result<Vec<DriveInfo>, String> {
     #[cfg(windows)]
     {
         let script = r#"Get-PSDrive -PSProvider FileSystem | ForEach-Object { "$($_.Name)|$($_.Root)" }"#;
-        let out = std::process::Command::new("powershell.exe")
-            .args(["-NoProfile", "-NonInteractive", "-Command", script])
-            .output()
-            .map_err(|e| e.to_string())?;
+        let out = crate::win_ps::run(script).map_err(|e| e.to_string())?;
         if !out.status.success() {
             return Err(
                 String::from_utf8_lossy(&out.stderr)
@@ -270,10 +267,7 @@ pub fn is_elevated() -> bool {
     #[cfg(windows)]
     {
         let script = r#"([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"#;
-        let out = std::process::Command::new("powershell.exe")
-            .args(["-NoProfile", "-NonInteractive", "-Command", script])
-            .output();
-        match out {
+        match crate::win_ps::run(script) {
             Ok(o) if o.status.success() => {
                 let t = String::from_utf8_lossy(&o.stdout).trim().to_ascii_lowercase();
                 t == "true"

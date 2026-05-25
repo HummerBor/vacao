@@ -165,9 +165,7 @@ if (-not $cleared) {
 }
 exit 0
 "#;
-    let out = std::process::Command::new("powershell.exe")
-        .args(["-NoProfile", "-NonInteractive", "-Command", script])
-        .output();
+    let out = crate::win_ps::run(script);
     match out {
         Ok(o) if o.status.success() => ok("C03", Some("回收站已清空".into())),
         Ok(o) => err(
