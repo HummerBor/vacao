@@ -6,8 +6,29 @@ import { initTitlebar } from "./titlebar";
 import { mountCleanTab, onPackImported } from "./ui/clean-tab";
 import { mountScanTab } from "./ui/scan-tab";
 import { mountSettingsTab } from "./ui/settings-tab";
+import { mountNpmMalwareTab } from "./ui/npm-malware-tab";
 
-function initTabs(): void {
+function showMountError(root: HTMLElement, label: string, err: unknown): void {
+  const msg = err instanceof Error ? err.message : String(err);
+  root.innerHTML = `<div class="tab-body"><p class="warn">${label}：${msg.replace(/</g, "&lt;")}</p></div>`;
+  console.error(label, err);
+}
+
+function mountNpmMalwareTabSafe(root: HTMLElement | null, tauriReady: boolean): boolean {
+  if (!root) {
+    console.error("npm-malware-root 未找到，请确认 index.html 已更新并重启 dev");
+    return false;
+  }
+  try {
+    mountNpmMalwareTab(root, tauriReady);
+    return true;
+  } catch (err) {
+    showMountError(root, "npm 毒包扫描界面加载失败", err);
+    return false;
+  }
+}
+
+function initTabs(onTabShown?: (tabId: string) => void): void {
   const tabs = document.querySelectorAll<HTMLButtonElement>(".tab-btn");
   const panels = document.querySelectorAll<HTMLElement>(".tab-panel");
   tabs.forEach((btn) => {
@@ -18,6 +39,7 @@ function initTabs(): void {
       panels.forEach((p) =>
         p.classList.toggle("active", p.id === `panel-${id}`),
       );
+      onTabShown?.(id);
     });
   });
 }
@@ -41,8 +63,22 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   }
   initTitlebar(ok);
-  initTabs();
+
+  let npmMalwareMounted = false;
+  const ensureNpmMalwareMounted = (): void => {
+    if (npmMalwareMounted) return;
+    npmMalwareMounted = mountNpmMalwareTabSafe(
+      document.getElementById("npm-malware-root"),
+      ok,
+    );
+  };
+
+  initTabs((tabId) => {
+    if (tabId === "npm-malware") ensureNpmMalwareMounted();
+  });
+
   mountCleanTab(document.getElementById("clean-root")!);
   mountScanTab(document.getElementById("scan-root")!, ok);
+  ensureNpmMalwareMounted();
   mountSettingsTab(document.getElementById("settings-root")!, { onPackImported });
 });

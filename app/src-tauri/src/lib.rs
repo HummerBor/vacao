@@ -9,7 +9,7 @@ mod scan;
 #[cfg(windows)]
 mod win_ps;
 
-pub use scan::ScanManager;
+pub use scan::{NpmMalwareManager, ScanManager};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -30,6 +30,7 @@ window.addEventListener('contextmenu',b,{capture:true});})();",
             Ok(())
         })
         .manage(ScanManager::default())
+        .manage(NpmMalwareManager::default())
         .invoke_handler(tauri::generate_handler![
             commands::get_config,
             commands::save_config,
@@ -56,6 +57,16 @@ window.addEventListener('contextmenu',b,{capture:true});})();",
             commands::export_skill_zip_bundle,
             commands::list_drives,
             commands::is_elevated,
+            commands::get_user_home,
+            commands::get_npm_disk_footprint,
+            commands::scan_npm_malware_start,
+            commands::scan_npm_malware_status,
+            commands::scan_npm_malware_cancel,
+            commands::import_malware_list,
+            commands::get_malware_list_status,
+            commands::reset_malware_list,
+            commands::delete_npm_malware_paths,
+            commands::pick_malware_list_file,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

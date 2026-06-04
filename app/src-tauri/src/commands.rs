@@ -8,10 +8,19 @@ use crate::clean::{
 use crate::config::AppConfig;
 use crate::delete::delete_to_recycle_batch;
 use crate::delete::DeleteResultRow;
+use crate::paths::normalize_scan_root;
 use crate::scan::{
     cancel_scan, get_scan_status, job_allowed_roots, list_all_category_labels, list_scan_ui_groups,
     pause_scan, resume_scan, start_scan, CategoryInfo,
     ScanManager, ScanStartArgs, ScanStatusDto,
+};
+use crate::scan::npm_malware::{
+    detect_npm_disk_footprint, import_user_list, load_user_list, reset_to_builtin, MalwareList,
+    NpmFootprintStatus,
+};
+use crate::scan::{
+    cancel_npm_malware_scan, get_npm_malware_status, start_npm_malware_scan, NpmMalwareManager,
+    NpmMalwareStatusDto,
 };
 use serde::Serialize;
 
@@ -279,4 +288,106 @@ pub fn is_elevated() -> bool {
     {
         false
     }
+}
+
+#[tauri::command]
+pub fn get_npm_disk_footprint() -> NpmFootprintStatus {
+    detect_npm_disk_footprint()
+}
+
+#[tauri::command]
+pub fn get_user_home() -> String {
+    dirs::home_dir()
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or_else(|| "C:\\".to_string())
+}
+
+#[tauri::command]
+pub fn scan_npm_malware_start(
+    app: tauri::AppHandle,
+    manager: tauri::State<NpmMalwareManager>,
+    project_root: Option<String>,
+) -> Result<String, String> {
+    start_npm_malware_scan(app, &manager, project_root)
+}
+
+#[tauri::command]
+pub fn scan_npm_malware_status(
+    manager: tauri::State<NpmMalwareManager>,
+    job_id: String,
+) -> Result<NpmMalwareStatusDto, String> {
+    get_npm_malware_status(&manager, &job_id)
+}
+
+#[tauri::command]
+pub fn scan_npm_malware_cancel(
+    manager: tauri::State<NpmMalwareManager>,
+    job_id: String,
+) -> Result<(), String> {
+    cancel_npm_malware_scan(&manager, &job_id)
+}
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NpmDeletePayload {
+    pub scan_roots: Vec<String>,
+    pub paths: Vec<String>,
+}
+
+#[tauri::command]
+pub fn delete_npm_malware_paths(payload: NpmDeletePayload) -> Result<Vec<DeleteResultRow>, String> {
+    let mut roots = Vec::new();
+    for r in &payload.scan_roots {
+        roots.push(normalize_scan_root(r)?);
+    }
+    if roots.is_empty() {
+        return Err("无有效扫描根路径".into());
+    }
+    Ok(delete_to_recycle_batch(&roots, &payload.paths))
+}
+
+#[tauri::command]
+pub async fn pick_malware_list_file(
+    app: tauri::AppHandle,
+    default_path: Option<String>,
+) -> Result<Option<String>, String> {
+    use tauri_plugin_dialog::DialogExt;
+    let default = default_path.unwrap_or_else(|| "C:\\".to_string());
+    let app = app.clone();
+    let picked = tauri::async_runtime::spawn_blocking(move || {
+        app.dialog()
+            .file()
+            .set_title("选择恶意包清单 JSON")
+            .add_filter("JSON", &["json"])
+            .set_directory(&default)
+            .blocking_pick_file()
+    })
+    .await
+    .map_err(|e| e.to_string())?;
+    Ok(picked.map(|fp| fp.to_string()))
+}
+
+#[tauri::command]
+pub fn import_malware_list(path: String) -> Result<serde_json::Value, String> {
+    let p = std::path::Path::new(&path);
+    let list: MalwareList = import_user_list(p)?;
+    Ok(serde_json::json!({
+        "version": list.version,
+        "source": list.source,
+        "count": list.packages.len()
+    }))
+}
+
+#[tauri::command]
+pub fn get_malware_list_status() -> serde_json::Value {
+    if load_user_list().is_some() {
+        serde_json::json!({ "active": "user" })
+    } else {
+        serde_json::json!({ "active": "builtin" })
+    }
+}
+
+#[tauri::command]
+pub fn reset_malware_list() -> Result<(), String> {
+    reset_to_builtin()
 }

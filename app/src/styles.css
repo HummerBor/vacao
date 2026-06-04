@@ -1619,6 +1619,118 @@ button:disabled:hover {
   position: relative;
 }
 
+.npm-malware-tab .npm-list-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 8px;
+  padding: 0 2px;
+}
+
+.npm-list-status {
+  flex: 1;
+  min-width: 140px;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.npm-malware-tab .path-sub {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  word-break: break-all;
+}
+
+.npm-footprint {
+  margin: 8px 2px 0;
+  font-size: 0.84rem;
+  color: #9ca3af;
+  line-height: 1.45;
+}
+
+.npm-footprint--warn {
+  color: #fbbf24;
+}
+
+.npm-scan-hint,
+.npm-advice {
+  margin: 6px 2px 0;
+  font-size: 0.82rem;
+  color: #9ca3af;
+}
+
+.npm-advice {
+  color: #fbbf24;
+}
+
+.npm-advice.hidden {
+  display: none;
+}
+
+.npm-guidance {
+  margin: 10px 2px 0;
+  font-size: 0.85rem;
+  color: #d1d5db;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: rgba(17, 24, 39, 0.5);
+}
+
+.npm-guidance summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.npm-guidance-body {
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+.npm-guidance-body p {
+  margin: 0 0 8px;
+}
+
+.npm-guidance-note {
+  color: #fbbf24;
+  font-size: 0.82rem;
+}
+
+.npm-guidance.hidden {
+  display: none;
+}
+
+.npm-guidance-cmd {
+  margin: 0;
+  padding: 8px 10px;
+  background: #111827;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  overflow-x: auto;
+}
+
+.npm-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.npm-phase-tag {
+  margin-left: 6px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.npm-row-confirmed .col-category:first-of-type {
+  color: #f87171;
+}
+
+.npm-row-suspicious .col-category:first-of-type {
+  color: #fbbf24;
+}
+
 .scan-filter-popover {
   position: absolute;
   z-index: 20;
