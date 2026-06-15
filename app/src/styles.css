@@ -41,6 +41,8 @@ body {
   background: #252a33;
   border-bottom: 1px solid #333;
   user-select: none;
+  -webkit-app-region: drag;
+  app-region: drag;
 }
 
 .titlebar-title {
@@ -55,6 +57,8 @@ body {
 .titlebar-controls {
   display: flex;
   height: 100%;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .titlebar-btn {
@@ -68,6 +72,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .titlebar-icon {
@@ -100,11 +106,20 @@ body.no-tauri-chrome .titlebar {
   display: none;
 }
 
+body.no-tauri-chrome .titlebar,
+body.no-tauri-chrome .app-header,
+body.no-tauri-chrome .tabs {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
 .app-header {
   flex-shrink: 0;
   padding: 0.45rem 1.25rem;
   border-bottom: 1px solid #333;
   background: #22262e;
+  -webkit-app-region: drag;
+  app-region: drag;
 }
 .elev {
   margin: 0;
@@ -128,6 +143,8 @@ body.no-tauri-chrome .app-header::before {
   flex-shrink: 0;
   border-bottom: 1px solid #333;
   background: #252a33;
+  -webkit-app-region: drag;
+  app-region: drag;
 }
 .tab-btn {
   padding: 0.6rem 1.2rem;
@@ -137,6 +154,8 @@ body.no-tauri-chrome .app-header::before {
   cursor: pointer;
   font-size: 0.95rem;
   border-bottom: 2px solid transparent;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 .tab-btn:hover {
   color: #e8eaed;
@@ -555,6 +574,16 @@ code {
 .clean-loading {
   padding: 1rem 0;
   text-align: center;
+}
+
+.clean-catalog-refreshing {
+  opacity: 0.72;
+}
+
+.clean-catalog-refreshing .clean-row-check input,
+.clean-catalog-refreshing .clean-detail-btn,
+.clean-catalog-refreshing .clean-group-select {
+  pointer-events: none;
 }
 
 .clean-foot {
@@ -1641,18 +1670,6 @@ button:disabled:hover {
   word-break: break-all;
 }
 
-.npm-footprint {
-  margin: 8px 2px 0;
-  font-size: 0.84rem;
-  color: #9ca3af;
-  line-height: 1.45;
-}
-
-.npm-footprint--warn {
-  color: #fbbf24;
-}
-
-.npm-scan-hint,
 .npm-advice {
   margin: 6px 2px 0;
   font-size: 0.82rem;

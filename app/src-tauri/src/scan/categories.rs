@@ -181,14 +181,6 @@ pub fn list_all_category_labels() -> Vec<CategoryInfo> {
         .collect()
 }
 
-pub fn category_label(id: &str) -> &str {
-    CATEGORIES
-        .iter()
-        .find(|c| c.id == id)
-        .map(|c| c.label)
-        .unwrap_or(id)
-}
-
 /// Map file extension (no dot) to category id; unknown → `other`.
 pub fn lookup_category(ext: &str) -> &'static str {
     let e = ext.to_ascii_lowercase();

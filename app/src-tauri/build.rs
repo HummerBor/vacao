@@ -5,7 +5,6 @@ fn main() {
         "icons/32x32.png",
         "icons/128x128.png",
         "icons/128x128@2x.png",
-        "icons/app-icon-source.png",
     ] {
         println!("cargo:rerun-if-changed={icon}");
     }

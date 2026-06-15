@@ -142,6 +142,7 @@ fn extension_of(path: &std::path::Path) -> String {
         .unwrap_or_default()
 }
 
+#[allow(clippy::too_many_arguments)]
 fn run_scan_worker(
     app: tauri::AppHandle,
     job_id: String,
@@ -154,6 +155,7 @@ fn run_scan_worker(
     pause: Arc<AtomicBool>,
     inner: JobCell,
 ) {
+    let started = std::time::Instant::now();
     let mut results: Vec<ScannedFileRow> = Vec::new();
     let mut files_seen: u64 = 0;
     let mut bytes_seen: u64 = 0;
@@ -161,7 +163,6 @@ fn run_scan_worker(
     let mut run_err: Option<String> = None;
     let mut at_cap = false;
 
-    let mut current_path: Option<String> = None;
     let sync_progress = |snapshot: &[ScannedFileRow],
                          files_seen: u64,
                          bytes_seen: u64,
@@ -223,7 +224,7 @@ fn run_scan_worker(
                 continue;
             }
             files_seen += 1;
-            current_path = Some(entry.path().to_string_lossy().to_string());
+            let current_path = entry.path().to_string_lossy().to_string();
             let meta = match entry.metadata() {
                 Ok(m) => m,
                 Err(_) => continue,
@@ -252,16 +253,20 @@ fn run_scan_worker(
                 at_cap = true;
             }
 
-            if files_seen % 512 == 0 {
-                sync_progress(
-                    &results,
-                    files_seen,
-                    bytes_seen,
-                    current_path.as_deref().unwrap_or(""),
-                );
+            if files_seen.is_multiple_of(512) {
+                sync_progress(&results, files_seen, bytes_seen, &current_path);
             }
         }
     }
+
+    eprintln!(
+        "[vacao] scan job {} done: {} files, {:.1} GB seen, {} hits in {:.1}s",
+        job_id,
+        files_seen,
+        bytes_seen as f64 / 1e9,
+        results.len(),
+        started.elapsed().as_secs_f64()
+    );
 
     let mut w = inner.lock();
     w.files_seen = files_seen;

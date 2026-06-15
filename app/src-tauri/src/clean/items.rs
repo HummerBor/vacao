@@ -3,7 +3,6 @@ use crate::clean::pack::clean_one_pack_id;
 use crate::clean::targets::{collect_targets, is_known_clean_id, purge_targets};
 use crate::config::AppConfig;
 use serde::Serialize;
-use std::path::Path;
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -183,9 +182,4 @@ exit 0
 #[cfg(not(windows))]
 fn empty_recycle_bin() -> CleanResultItem {
     skip("C03", "仅支持 Windows")
-}
-
-#[allow(dead_code)]
-fn _path_exists(p: &Path) -> bool {
-    p.exists()
 }

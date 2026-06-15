@@ -1,0 +1,2 @@
+# 图标变更不参与 dev 热重载（改图标时先停 dev，再 tauri icon，再重启）
+icons/

@@ -83,4 +83,5 @@ npm run tauri build
 
 - [x] Tauri 版 v1.x 功能（清理 / 扫描 / 设置 / 扩展包）
 - [x] npm 毒包扫描 Tab
-- [ ] CI 与签名发布流程（待补充）
+- [x] CI（GitHub Actions：前端构建 + cargo test + clippy，见 `.github/workflows/ci.yml`）
+- [ ] 签名发布流程（待补充）

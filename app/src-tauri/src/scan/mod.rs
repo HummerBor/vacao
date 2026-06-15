@@ -3,7 +3,6 @@ mod job;
 mod npm_malware_lock_parse;
 pub mod npm_malware;
 mod npm_malware_index;
-mod npm_malware_execute;
 mod npm_malware_job;
 
 pub use categories::*;

@@ -138,11 +138,15 @@ pub fn delete_to_recycle(
 }
 
 #[tauri::command]
-pub fn clean_catalog() -> Result<Vec<CleanCatalogItem>, String> {
-    let cfg = AppConfig::load().map_err(|e| e.to_string())?;
-    let mut items = build_clean_catalog(&cfg);
-    items.extend(build_pack_catalog(&cfg)?);
-    Ok(items)
+pub async fn clean_catalog() -> Result<Vec<CleanCatalogItem>, String> {
+    tauri::async_runtime::spawn_blocking(|| {
+        let cfg = AppConfig::load().map_err(|e| e.to_string())?;
+        let mut items = build_clean_catalog(&cfg);
+        items.extend(build_pack_catalog(&cfg)?);
+        Ok(items)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]

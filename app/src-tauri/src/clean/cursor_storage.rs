@@ -256,10 +256,12 @@ mod tests {
 
     #[test]
     fn matches_ws_filter_all_requires_both() {
-        let mut cfg = AppConfig::default();
-        cfg.cursor_ws_min_age_days = 30;
-        cfg.cursor_ws_min_size_mb = 10;
-        cfg.cursor_ws_match_mode = "all".into();
+        let cfg = AppConfig {
+            cursor_ws_min_age_days: 30,
+            cursor_ws_min_size_mb: 10,
+            cursor_ws_match_mode: "all".into(),
+            ..AppConfig::default()
+        };
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
@@ -271,8 +273,10 @@ mod tests {
 
     #[test]
     fn matches_ws_filter_any_either() {
-        let mut cfg = AppConfig::default();
-        cfg.cursor_ws_match_mode = "any".into();
+        let cfg = AppConfig {
+            cursor_ws_match_mode: "any".into(),
+            ..AppConfig::default()
+        };
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()

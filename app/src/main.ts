@@ -3,10 +3,10 @@ import "./polyfill-tauri-internals";
 import { invoke } from "./ipc";
 import { waitForTauriApi } from "./polyfill-tauri-internals";
 import { initTitlebar } from "./titlebar";
-import { mountCleanTab, onPackImported } from "./ui/clean-tab";
-import { mountScanTab } from "./ui/scan-tab";
+import { mountCleanTab, onPackImported } from "./ui/clean";
+import { mountScanTab } from "./ui/scan";
 import { mountSettingsTab } from "./ui/settings-tab";
-import { mountNpmMalwareTab } from "./ui/npm-malware-tab";
+import { mountNpmMalwareTab } from "./ui/npm-malware";
 
 function showMountError(root: HTMLElement, label: string, err: unknown): void {
   const msg = err instanceof Error ? err.message : String(err);

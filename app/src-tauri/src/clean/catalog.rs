@@ -3,6 +3,7 @@ use crate::clean::targets::{
     browser_paths_hint, collect_targets, estimate_recycle_bin_bytes, estimate_targets_bytes,
 };
 use crate::config::AppConfig;
+use rayon::prelude::*;
 use serde::Serialize;
 use std::path::PathBuf;
 
@@ -234,42 +235,53 @@ fn delete_note_for(id: &str, base: &str, cfg: &AppConfig) -> String {
     }
 }
 
+fn build_catalog_item(item: ItemDef, cfg: &AppConfig) -> CleanCatalogItem {
+    let paths = collect_targets(item.id, cfg);
+    let (paths_hint, size_bytes) = if item.id == "C17" {
+        let (_, bytes) = cursor_storage::estimate_c17_bytes(cfg);
+        (cursor_storage::format_c17_paths_hint(cfg), bytes)
+    } else if item.id == "C18" {
+        let (bytes, _) = cursor_storage::estimate_c18_bytes(cfg);
+        (cursor_storage::format_c18_paths_hint(cfg), bytes)
+    } else {
+        let hint = format_resolved_paths(item.id, cfg, &paths);
+        let size = if item.id == "C03" {
+            estimate_recycle_bin_bytes().unwrap_or(0)
+        } else {
+            estimate_targets_bytes(&paths)
+        };
+        (hint, size)
+    };
+    let warn = item.warn || (item.id == "C04" && cfg.browser_clear_cookies);
+    CleanCatalogItem {
+        id: item.id.into(),
+        label: item.label.into(),
+        paths_hint,
+        purpose: item.purpose.into(),
+        delete_note: delete_note_for(item.id, item.delete_note, cfg),
+        tag: item.tag.into(),
+        warn,
+        default_checked: item.default_checked,
+        size_bytes,
+        size_display: fmt_bytes(size_bytes),
+    }
+}
+
 pub fn build_clean_catalog(cfg: &AppConfig) -> Vec<CleanCatalogItem> {
-    static_catalog()
-        .into_iter()
-        .map(|item| {
-            let paths = collect_targets(item.id, cfg);
-            let (paths_hint, size_bytes) = if item.id == "C17" {
-                let (_, bytes) = cursor_storage::estimate_c17_bytes(cfg);
-                (cursor_storage::format_c17_paths_hint(cfg), bytes)
-            } else if item.id == "C18" {
-                let (bytes, _) = cursor_storage::estimate_c18_bytes(cfg);
-                (
-                    cursor_storage::format_c18_paths_hint(cfg),
-                    bytes,
-                )
-            } else {
-                let hint = format_resolved_paths(item.id, cfg, &paths);
-                let size = if item.id == "C03" {
-                    estimate_recycle_bin_bytes().unwrap_or(0)
-                } else {
-                    estimate_targets_bytes(&paths)
-                };
-                (hint, size)
-            };
-            let warn = item.warn || (item.id == "C04" && cfg.browser_clear_cookies);
-            CleanCatalogItem {
-                id: item.id.into(),
-                label: item.label.into(),
-                paths_hint,
-                purpose: item.purpose.into(),
-                delete_note: delete_note_for(item.id, item.delete_note, cfg),
-                tag: item.tag.into(),
-                warn,
-                default_checked: item.default_checked,
-                size_bytes,
-                size_display: fmt_bytes(size_bytes),
-            }
-        })
-        .collect()
+    let cfg = cfg.clone();
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(4.min(rayon::current_num_threads()))
+        .build()
+        .unwrap_or_else(|_| {
+            rayon::ThreadPoolBuilder::new()
+                .num_threads(1)
+                .build()
+                .expect("rayon pool")
+        });
+    pool.install(|| {
+        static_catalog()
+            .into_par_iter()
+            .map(|item| build_catalog_item(item, &cfg))
+            .collect()
+    })
 }
